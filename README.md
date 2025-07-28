@@ -18,13 +18,15 @@ Clone this repository and navigate to your project directory.
 **1. Start the Server**
  
  Open a terminal and run:
- python codenames_server.py
+ 
+ **python codenames_server.py**
  Then, in a separate terminal window, start the client:
  
  **2. Start the Client**
 
+ Open a terminal and run:
+ **python codenames_client.py**
  
- python codenames_client.py
  Make sure to run the server before the client.
  Run this for more clients to play.
 
