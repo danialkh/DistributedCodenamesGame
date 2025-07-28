@@ -20,7 +20,10 @@ Clone this repository and navigate to your project directory.
  Open a terminal and run:
  python codenames_server.py
  Then, in a separate terminal window, start the client:
+ 
  **2. Start the Client**
+
+ 
  python codenames_client.py
  Make sure to run the server before the client.
  Run this for more clients to play.
