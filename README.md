@@ -1,0 +1,2 @@
+# DistributedCodenamesGame
+Distributed Codenames Game
