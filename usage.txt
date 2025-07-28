@@ -1,0 +1,5 @@
+cd C:\Users\Danial\Desktop\ll\pppppppppppp\11
+python codenames_server.py
+
+
+python codenames_client.py
