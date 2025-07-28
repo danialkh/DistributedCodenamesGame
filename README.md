@@ -1,15 +1,28 @@
 # DistributedCodenamesGame
 
-Usage
-To start the Codenames game server and client, run the following commands in your terminal:
 
-bash
-python codenames_server.py
-Then, in a separate terminal window, start the client:
+# 🎲 Codenames Game
 
-bash
-python codenames_client.py
-Make sure to run the server before the client.
+Welcome to the **Codenames** game implementation! Below you'll find steps to quickly get up and running.
+
+---
+
+## 🚀 Getting Started
+
+Clone this repository and navigate to your project directory.
+
+---
+
+## 🖥️ Usage
+
+**1. Start the Server**
+ 
+ Open a terminal and run:
+ python codenames_server.py
+ Then, in a separate terminal window, start the client:
+ 
+ python codenames_client.py
+ Make sure to run the server before the client.
 
   **It is Red's Turn to guess**
 
