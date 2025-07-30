@@ -1,5 +1,3 @@
-cd C:\Users\Danial\Desktop\ll\pppppppppppp\11
+cd to the directory of these files then to run the server and clients use these:
 python codenames_server.py
-
-
 python codenames_client.py
