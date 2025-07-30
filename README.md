@@ -37,13 +37,9 @@ Clone this repository and navigate to your project directory.
 **Codenames Lobby**
     This Python-based multiplayer game lobby allows players to:
     •	View a list of online players currently not in a room
-    
-    •	See all available game rooms and their names
-    
+    •	See all available game rooms and their names  
     •	Create a new room by entering a name and clicking "Create Room"
-    
     •	Participate in a lobby-wide chat with live messaging
-    
     •	Refresh the lobby to update player and room lists
     
     The lobby serves as a central hub to organize game sessions, chat, and manage rooms, system messages before gameplay begins.
