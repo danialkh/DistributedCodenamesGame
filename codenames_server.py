@@ -368,106 +368,156 @@ class GameRoom:
             self.guesses_made = 0 # Reset guesses for the new clue
             self.add_chat_message(f"{self.clients.get(client_fileno, 'Unknown')} gave clue: '{self.clue_word}' ({self.clue_number})")
             print(f"Room {self.room_id}: Clue '{word}' ({number}) given by {self.clients.get(client_fileno, 'Unknown')}.")
-            return True, "Clue received."
 
+
+
+            for card in self.board:
+                print(f"cycle word:{card["word"].lower()}")
+
+            
+            # self.add_chat_message(f"{self.clients.get(client_fileno, 'Unknown')} process clue: '{self.clue_word}' ({self.clue_number})")
+            # room = self.rooms.get(current_room_id)
+            # room.process_guess(self, self.clients.get(client_fileno, 'Unknown'), self.clue_word)
+
+
+
+            return True, "Clue received."
     def process_guess(self, client_fileno, guessed_word):
+        print(f"--- Entering process_guess for client {client_fileno}, guessed_word: '{guessed_word}' ---")
+
         with self.lock:
-            if self.game_over: return False, "Game is over."
-            if not self.game_in_progress: return False, "Game not in progress."
+            print(f"Acquired lock for processing guess.")
+            if self.game_over:
+                print(f"Game is over. Returning False.")
+                return False, "Game is over."
+            if not self.game_in_progress:
+                print(f"Game not in progress. Returning False.")
+                return False, "Game not in progress."
 
             # Check if a clue has been given yet
             if not self.clue_word:
+                print(f"No clue has been given yet. Returning False.")
                 return False, "No clue has been given yet."
+            print(f"Current clue word: '{self.clue_word}', clue number: {self.clue_number}")
 
             # Check if it's the correct Operative's turn
             is_operative_of_current_team = False
             if self.turn == "red" and client_fileno in self.red_operatives_filenos:
                 is_operative_of_current_team = True
+                print(f"Client {client_fileno} is a red operative and it's red's turn.")
             elif self.turn == "blue" and client_fileno in self.blue_operatives_filenos:
                 is_operative_of_current_team = True
+                print(f"Client {client_fileno} is a blue operative and it's blue's turn.")
             
             if not is_operative_of_current_team:
+                print(f"Client {client_fileno} is not an operative for the current turn ({self.turn}). Returning False.")
                 return False, "It's not your team's turn or you are not an operative for the current turn."
 
             # Check if guess limit reached (clue_number + 1 bonus guess)
+            print(f"Guesses made: {self.guesses_made}, Allowed guesses: {self.clue_number + 1}")
             if self.guesses_made >= (self.clue_number + 1):
+                print(f"Guess limit reached. Returning False.")
                 # If they try to guess beyond their allowed guesses, it's an invalid move
                 # and doesn't end the turn, but tells them they can't.
                 return False, "You have used all your guesses for this clue. Please end your turn."
 
             found_card = None
+            print(f"Searching for '{guessed_word}' on the board.")
             for card in self.board:
                 if card["word"].lower() == guessed_word.lower():
                     found_card = card
+                    print(f"Found card: {found_card['word']} with color {found_card['color']}.")
                     break
 
             if not found_card:
                 self.guesses_made += 1 # A guess on a non-existent word still counts towards total guesses
                 self.add_chat_message(f"{self.clients.get(client_fileno, 'Unknown')} guessed '{guessed_word}' (not on board).")
-                print(f"Room {self.room_id}: {self.clients.get(client_fileno, 'Unknown')} guessed '{guessed_word}' (not on board).")
+                print(f"Room {self.room_id}: {self.clients.get(client_fileno, 'Unknown')} guessed '{guessed_word}' (not on board). Guesses made: {self.guesses_made}.")
                 # If they guess a word not on the board, the turn usually ends immediately.
-                self._end_turn() 
+                print(f"Word not found on board. Ending turn.")
+                self._end_turn()    
                 return False, "Word not found on the board. Your turn ends."
 
+
+            alreadyRevealedCart = False
             if found_card["revealed"]:
-                return False, "That word has already been revealed."
+                print(f"Card '{found_card['word']}' already revealed. Returning False.")
+                alreadyRevealedCart = True
+                result_message = ""
+                turn_ends = False
+                # return False, "That word has already been revealed."
 
-            found_card["revealed"] = True
-            self.guesses_made += 1
+            if not alreadyRevealedCart:
+                found_card["revealed"] = True
+                self.guesses_made += 1
+                print(f"Card '{found_card['word']}' revealed. Guesses made: {self.guesses_made}.")
 
-            result_message = ""
-            turn_ends = False
+                result_message = ""
+                turn_ends = False
 
-            if found_card["color"] == self.turn:
-                # Correct team's word
-                if self.turn == "red":
-                    self.red_score -= 1
-                else: # blue
-                    self.blue_score -= 1
-                result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed their own word: {found_card['word']}."
-                self.add_chat_message(result_message)
-            elif found_card["color"] == "innocent":
-                # Innocent bystander
-                result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed an Innocent bystander: {found_card['word']}. Turn ends!"
-                self.add_chat_message(result_message)
-                turn_ends = True
-            elif found_card["color"] == "assassin":
-                # Assassin
-                result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed the Assassin word: {found_card['word']}! Game Over!"
-                self.add_chat_message(result_message)
-                self.game_over = True
-                self.winner = "blue" if self.turn == "red" else "red" # Assassin causes immediate loss for guessing team
-                turn_ends = True # Game over, so turn ends
-            else:
-                # Opponent's word
-                if self.turn == "red": # Red guessed blue's word
-                    self.blue_score -= 1
-                else: # Blue guessed red's word
-                    self.red_score -= 1
-                result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed opponent's word: {found_card['word']}. Turn ends!"
-                self.add_chat_message(result_message)
-                turn_ends = True
-            
-            print(f"Room {self.room_id}: {result_message}")
+                print(f"Guessed card color: {found_card['color']}, Current turn: {self.turn}")
+                if found_card["color"] == self.turn:
+                    # Correct team's word
+                    if self.turn == "red":
+                        self.red_score -= 1
+                        print(f"Red team guessed own word. Red score: {self.red_score}")
+                    else: # blue
+                        self.blue_score -= 1
+                        print(f"Blue team guessed own word. Blue score: {self.blue_score}")
+                    result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed their own word: {found_card['word']}."
+                    self.add_chat_message(result_message)
+                elif found_card["color"] == "innocent":
+                    # Innocent bystander
+                    result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed an Innocent bystander: {found_card['word']}. Turn ends!"
+                    self.add_chat_message(result_message)
+                    turn_ends = True
+                    print(f"Innocent bystander guessed. Turn ends: {turn_ends}.")
+                elif found_card["color"] == "assassin":
+                    # Assassin
+                    result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed the Assassin word: {found_card['word']}! Game Over!"
+                    self.add_chat_message(result_message)
+                    self.game_over = True
+                    self.winner = "blue" if self.turn == "red" else "red" # Assassin causes immediate loss for guessing team
+                    turn_ends = True # Game over, so turn ends
+                    print(f"Assassin guessed! Game Over: {self.game_over}, Winner: {self.winner}. Turn ends: {turn_ends}.")
+                else:
+                    # Opponent's word
+                    if self.turn == "red": # Red guessed blue's word
+                        self.blue_score -= 1
+                        print(f"Red guessed opponent's word. Blue score: {self.blue_score}")
+                    else: # Blue guessed red's word
+                        self.red_score -= 1
+                        print(f"Blue guessed opponent's word. Red score: {self.red_score}")
+                    result_message = f"{self.clients.get(client_fileno, 'Unknown')} guessed opponent's word: {found_card['word']}. Turn ends!"
+                    self.add_chat_message(result_message)
+                    turn_ends = True
+                    print(f"Opponent's word guessed. Turn ends: {turn_ends}.")
+                
+                print(f"Room {self.room_id}: {result_message}")
 
-            # Check for win conditions
-            if self.red_score == 0:
-                self.game_over = True
-                self.winner = "red"
-                self.add_chat_message("RED TEAM WINS!", is_system=True)
-                print(f"Room {self.room_id}: RED TEAM WINS!")
-            elif self.blue_score == 0:
-                self.game_over = True
-                self.winner = "blue"
-                self.add_chat_message("BLUE TEAM WINS!", is_system=True)
-                print(f"Room {self.room_id}: BLUE TEAM WINS!")
-            
-            # End turn if criteria met
-            if turn_ends or self.game_over or self.guesses_made > self.clue_number:
-                self._end_turn()
+                # Check for win conditions
+                print(f"Checking win conditions. Red score: {self.red_score}, Blue score: {self.blue_score}.")
+                if self.red_score == 0:
+                    self.game_over = True
+                    self.winner = "red"
+                    self.add_chat_message("RED TEAM WINS!", is_system=True)
+                    print(f"Room {self.room_id}: RED TEAM WINS! Game Over: {self.game_over}, Winner: {self.winner}.")
+                elif self.blue_score == 0:
+                    self.game_over = True
+                    self.winner = "blue"
+                    self.add_chat_message("BLUE TEAM WINS!", is_system=True)
+                    print(f"Room {self.room_id}: BLUE TEAM WINS! Game Over: {self.game_over}, Winner: {self.winner}.")
+                
+                # End turn if criteria met
+                print(f"Evaluating turn end conditions: turn_ends={turn_ends}, game_over={self.game_over}, guesses_made={self.guesses_made}, clue_number={self.clue_number}.")
+                if turn_ends or self.game_over or self.guesses_made > self.clue_number:
+                    print(f"Calling _end_turn().")
+                    self._end_turn()
+                else:
+                    print(f"Turn continues.")
 
+            print(f"--- Exiting process_guess. Result: True, Message: '{result_message}' ---")
             return True, result_message
-
 
     def _end_turn(self):
         with self.lock:
@@ -720,7 +770,14 @@ class CodenamesServer:
                     if room and client_fileno == room.owner_fileno: # Only room owner can start
                         success, msg = room.start_game()
                         if not success:
-                            self._send_to_client(client_fileno, {"type": "error", "message": msg})
+                            self._send_to_client(client_fileno, {
+        "type": "guess_feedback",
+        "message": msg,
+        "guess": word,
+        "clue": room.clue_word,
+        "team": player_obj.team,
+        "turn": room.turn
+    })
                         else:
                             # Game started, state updates will be sent periodically
                             self._send_to_client(client_fileno, {"type": "game_start_ack", "message": msg})
@@ -737,21 +794,46 @@ class CodenamesServer:
                     room = self.rooms.get(current_room_id)
                     if room and room.game_in_progress:
                         success, msg = room.process_clue(client_fileno, word, number)
+                        success, msg = room.process_guess(client_fileno, word)
                         if not success:
-                            self._send_to_client(client_fileno, {"type": "error", "message": msg})
+                            self._send_to_client(client_fileno, {
+        "type": "guess_feedback",
+        "message": msg,
+        "guess": word,
+        "clue": room.clue_word,
+        "team": player_obj.team,
+        "turn": room.turn
+    })
                     else:
                         self._send_to_client(client_fileno, {"type": "error", "message": "No game in progress in this room."})
                 else:
                     self._send_to_client(client_fileno, {"type": "error", "message": "Not in a room."})
 
+            
             elif mtype == "guess":
                 word = message.get("word")
                 if current_room_id:
                     room = self.rooms.get(current_room_id)
                     if room and room.game_in_progress:
-                        success, msg = room.process_guess(client_fileno, word)
-                        if not success:
-                            self._send_to_client(client_fileno, {"type": "error", "message": msg})
+                        # success, msg = room.process_guess(client_fileno, word)
+                        self._send_to_client(client_fileno, {"type": "info", "message": msg})
+                        if success:
+                            self._broadcast_game_state_to_room(current_room_id)
+                    else:
+                        self._send_to_client(client_fileno, {"type": "error", "message": "No game in progress in this room."})
+                else:
+                    self._send_to_client(client_fileno, {"type": "error", "message": "Not in a room."})
+                if success:
+                    self._broadcast_game_state_to_room(current_room_id)
+                    if not success:
+                        self._send_to_client(client_fileno, {
+                        "type": "guess_feedback",
+                        "message": msg,
+                        "guess": word,
+                        "clue": room.clue_word,
+                        "team": player_obj.team,
+                        "turn": room.turn
+                    })
                     else:
                         self._send_to_client(client_fileno, {"type": "error", "message": "No game in progress in this room."})
                 else:
@@ -763,7 +845,14 @@ class CodenamesServer:
                     if room and room.game_in_progress:
                         success, msg = room.process_end_turn(client_fileno)
                         if not success:
-                            self._send_to_client(client_fileno, {"type": "error", "message": msg})
+                            self._send_to_client(client_fileno, {
+        "type": "guess_feedback",
+        "message": msg,
+        "guess": word,
+        "clue": room.clue_word,
+        "team": player_obj.team,
+        "turn": room.turn
+    })
                     else:
                         self._send_to_client(client_fileno, {"type": "error", "message": "No game in progress in this room."})
                 else:
@@ -862,6 +951,15 @@ class CodenamesServer:
                 self._add_lobby_chat_message(f"{client_name} disconnected from the server.", is_system=True)
                 self._broadcast_lobby_update() # Immediate update after client disconnects
                 print(f"Cleaned up client {client_name} ({client_fileno}).")
+
+
+    def _broadcast_game_state_to_room(self, room_id):
+        room = self.rooms.get(room_id)
+        if room:
+            for fileno in room.clients:
+                game_state = room.get_game_state_for_client(fileno)
+                self._send_to_client(fileno, game_state)
+
 
 if __name__ == "__main__":
     server = CodenamesServer(HOST, PORT)

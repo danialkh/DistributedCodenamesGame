@@ -511,6 +511,10 @@ class CodenamesClient:
                 print("[CLIENT] Invalid clue. Word and number (1-9) are required.")
                 return
 
+
+            # self._send_guess(clue_word)
+
+
             message = {"type": "clue", "word": clue_word, "number": clue_number}
             self._send_message(message)
             self.clue_word_input.clear_text()
@@ -813,10 +817,15 @@ class CodenamesClient:
         is_current_spymaster_for_turn = (self.my_assigned_role == "spymaster" and self.my_assigned_team == self.current_turn)
         is_current_operative_for_turn = (self.my_assigned_role == "operative" and self.my_assigned_team == self.current_turn)
         
-        print(f"[CLIENT_DEBUG] In draw_game: Client Fileno={self.client_fileno}, Current Turn={self.current_turn}")
-        print(f"[CLIENT_DEBUG] My Assigned Team={self.my_assigned_team}, My Assigned Role={self.my_assigned_role}")
-        print(f"[CLIENT_DEBUG] Is Current Spymaster for turn: {is_current_spymaster_for_turn}")
-        print(f"[CLIENT_DEBUG] Is Current Operative for turn: {is_current_operative_for_turn}")
+
+        # print(f"[CLIENT_DEBUG] In draw_game: Client Fileno={self.client_fileno}, Current Turn={self.current_turn}")
+        # print(f"[CLIENT_DEBUG] My Assigned Team={self.my_assigned_team}, My Assigned Role={self.my_assigned_role}")
+        # print(f"[CLIENT_DEBUG] Is Current Spymaster for turn: {is_current_spymaster_for_turn}")
+        # print(f"[CLIENT_DEBUG] Is Current Operative for turn: {is_current_operative_for_turn}")
+
+
+
+        print(f"self.blue_score={self.blue_score}, self.red_score={self.red_score}")
 
         # Enable/Disable controls based on role and turn
         can_give_clue = is_current_spymaster_for_turn and not self.clue_word and not self.game_over
@@ -863,7 +872,7 @@ class CodenamesClient:
             for rect, word in card_rects:
                 if rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0] and \
                    not next((c for c in self.game_board if c["word"] == word), {}).get('revealed', False):
-                    self._send_guess(word)
+                    # self._send_guess(word)
                     break
         else:
             self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
