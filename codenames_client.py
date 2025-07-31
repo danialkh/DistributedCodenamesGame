@@ -817,6 +817,7 @@ class CodenamesClient:
         is_current_spymaster_for_turn = (self.my_assigned_role == "spymaster" and self.my_assigned_team == self.current_turn)
         is_current_operative_for_turn = (self.my_assigned_role == "operative" and self.my_assigned_team == self.current_turn)
         
+        is_current_operative_for_turn_forBTNState = (self.my_assigned_team == self.current_turn)
 
         # print(f"[CLIENT_DEBUG] In draw_game: Client Fileno={self.client_fileno}, Current Turn={self.current_turn}")
         # print(f"[CLIENT_DEBUG] My Assigned Team={self.my_assigned_team}, My Assigned Role={self.my_assigned_role}")
@@ -860,6 +861,10 @@ class CodenamesClient:
             ui_elements.append(back_to_lobby_button)
         elif is_current_spymaster_for_turn and not self.clue_word:
             self._draw_text("It's your turn to give a clue!", FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
+            self.end_turn_button.text  = "End Turn"
+
+
+
         elif is_current_operative_for_turn and self.clue_word:
             self._draw_text(f"Click a word to guess (Guesses left: {self.clue_number + 1 - self.guesses_made})", 
                            FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
@@ -871,6 +876,11 @@ class CodenamesClient:
                     break
         else:
             self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
+
+            if(is_current_operative_for_turn_forBTNState):
+                self.end_turn_button.text  = "End Turn"
+            else:
+                self.end_turn_button.text  = "Leave the Room"
 
         return ui_elements
 
