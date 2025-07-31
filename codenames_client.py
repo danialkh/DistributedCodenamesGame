@@ -9,7 +9,7 @@ import traceback # For better error debugging
 import select # Import the select module for non-blocking I/O
 
 # --- Constants ---
-WIDTH, HEIGHT = 1000, 700
+WIDTH, HEIGHT = 1000, 650
 FPS = 60
 HEADER_LENGTH = 10 # Must match server's HEADER_LENGTH
 
@@ -243,7 +243,7 @@ class CodenamesClient:
                                        lambda: self._send_set_team("blue"), base_color=BLUE_CARD, hover_color=(80, 80, 220))
 
         self.clue_word_input = InputBox(50, HEIGHT - 100, 150, 40, placeholder="Clue Word")
-        self.clue_number_input = InputBox(210, HEIGHT - 100, 80, 40, placeholder="Num")
+        
         self.send_clue_button = Button(300, HEIGHT - 100, 100, 40, "Send Clue", self._send_clue)
         self.end_turn_button = Button(WIDTH - 150, HEIGHT - 100, 120, 40, "End Turn", self._send_end_turn)
 
@@ -399,14 +399,14 @@ class CodenamesClient:
             self.my_assigned_role = message.get("my_role")
             
             # Debug prints for role and turn
-            print(f"[CLIENT_DEBUG] Client Fileno: {self.client_fileno}")
-            print(f"[CLIENT_DEBUG] Red Spymaster Fileno: {self.spymaster_red_fileno}")
-            print(f"[CLIENT_DEBUG] Blue Spymaster Fileno: {self.spymaster_blue_fileno}")
-            print(f"[CLIENT_DEBUG] Is this client a Spymaster? {self.is_spymaster}")
-            print(f"[CLIENT_DEBUG] Current Turn: {self.current_turn}")
-            print(f"[CLIENT_DEBUG] Operative Red: {self.operative_red_filenos}")
-            print(f"[CLIENT_DEBUG] Operative Blue: {self.operative_blue_filenos}")
-            print(f"[CLIENT_DEBUG] My Assigned Team: {self.my_assigned_team}, My Assigned Role: {self.my_assigned_role}")
+            # print(f"[CLIENT_DEBUG] Client Fileno: {self.client_fileno}")
+            # print(f"[CLIENT_DEBUG] Red Spymaster Fileno: {self.spymaster_red_fileno}")
+            # print(f"[CLIENT_DEBUG] Blue Spymaster Fileno: {self.spymaster_blue_fileno}")
+            # print(f"[CLIENT_DEBUG] Is this client a Spymaster? {self.is_spymaster}")
+            # print(f"[CLIENT_DEBUG] Current Turn: {self.current_turn}")
+            # print(f"[CLIENT_DEBUG] Operative Red: {self.operative_red_filenos}")
+            # print(f"[CLIENT_DEBUG] Operative Blue: {self.operative_blue_filenos}")
+            # print(f"[CLIENT_DEBUG] My Assigned Team: {self.my_assigned_team}, My Assigned Role: {self.my_assigned_role}")
             
             self.game_active = True
             self.game_start_requested = False # Reset this flag
@@ -503,18 +503,20 @@ class CodenamesClient:
     def _send_clue(self):
         """Sends a clue to the server (Spymaster action)."""
         clue_word = self.clue_word_input.get_text().strip()
-        clue_number_str = self.clue_number_input.get_text().strip()
         
         try:
-            clue_number = int(clue_number_str)
+            clue_number = int(1)
             if not clue_word or not (1 <= clue_number <= 9): # Clue number should be 1-9
                 print("[CLIENT] Invalid clue. Word and number (1-9) are required.")
                 return
 
+
+            # self._send_guess(clue_word)
+
+
             message = {"type": "clue", "word": clue_word, "number": clue_number}
             self._send_message(message)
             self.clue_word_input.clear_text()
-            self.clue_number_input.clear_text()
         except ValueError:
             print("[CLIENT] Clue number must be an integer.")
 
@@ -583,7 +585,7 @@ class CodenamesClient:
         ui_elements.append(self.refresh_lobby_button)
 
         # Players List Panel
-        player_panel_rect = pygame.Rect(20, 70, 250, HEIGHT - 150)
+        player_panel_rect = pygame.Rect(20, 70, 250, HEIGHT - 250)
         pygame.draw.rect(self.screen, PANEL_COLOR, player_panel_rect, border_radius=10)
         self._draw_text("Online Players:", FONT_MEDIUM, TEXT_COLOR, player_panel_rect.x + 10, player_panel_rect.y + 10, center=False)
         
@@ -592,7 +594,7 @@ class CodenamesClient:
             self._draw_text(pname, FONT_SMALL, HIGHLIGHT_COLOR if pname == self.username else TEXT_COLOR, player_panel_rect.x + 20, y_offset + i * 25, center=False)
 
         # Rooms List Panel
-        room_panel_rect = pygame.Rect(290, 70, WIDTH - 310, HEIGHT - 150)
+        room_panel_rect = pygame.Rect(290, 70, WIDTH - 310, HEIGHT - 250)
         pygame.draw.rect(self.screen, PANEL_COLOR, room_panel_rect, border_radius=10)
         self._draw_text("Available Rooms:", FONT_MEDIUM, TEXT_COLOR, room_panel_rect.x + 10, room_panel_rect.y + 10, center=False)
 
@@ -625,25 +627,25 @@ class CodenamesClient:
             ui_elements.append(join_btn)
 
         # Chat Panel (bottom)
-        chat_panel_rect = pygame.Rect(20, HEIGHT - 110, WIDTH - 40, 80)
+        chat_panel_rect = pygame.Rect(20, HEIGHT - 170, WIDTH - 40, 150)
         pygame.draw.rect(self.screen, PANEL_COLOR, chat_panel_rect, border_radius=10)
-        self._draw_text("Lobby Chat", FONT_MEDIUM, TEXT_COLOR, chat_panel_rect.x + 10, chat_panel_rect.y + 5, center=False)
+        self._draw_text("Lobby Chat", FONT_MEDIUM, TEXT_COLOR, chat_panel_rect.x + 10, chat_panel_rect.y + 15, center=False)
 
         # Display last chat message
-        chat_msg_area_rect = pygame.Rect(chat_panel_rect.x + 10, chat_panel_rect.y + 30, chat_panel_rect.width - 20, 20)
+        chat_msg_area_rect = pygame.Rect(chat_panel_rect.x + 10, chat_panel_rect.y + 50, chat_panel_rect.width - 20, 30)
         pygame.draw.rect(self.screen, (20, 20, 30), chat_msg_area_rect, border_radius=5)
         
         if self.lobby_chat:
             last_msg = self.lobby_chat[-1]
-            self._draw_text(last_msg, FONT_SMALL, TEXT_COLOR, chat_msg_area_rect.x + 5, chat_msg_area_rect.y + 3, center=False)
+            self._draw_text(last_msg, FONT_SMALL, TEXT_COLOR, chat_msg_area_rect.x + 5, chat_msg_area_rect.y + 5, center=False)
 
         # Chat Input & Send Button
-        self.chat_input.rect.topleft = (chat_panel_rect.x + 10, chat_panel_rect.y + 55)
+        self.chat_input.rect.topleft = (chat_panel_rect.x + 10, chat_panel_rect.y + 90)
         self.chat_input.rect.width = chat_panel_rect.width - 120
         self.chat_input.draw(self.screen)
         ui_elements.append(self.chat_input)
         
-        self.send_chat_button.rect.topleft = (self.chat_input.rect.right + 5, chat_panel_rect.y + 55)
+        self.send_chat_button.rect.topleft = (self.chat_input.rect.right + 5, chat_panel_rect.y + 90)
         self.send_chat_button.draw(self.screen, mouse_pos)
         ui_elements.append(self.send_chat_button)
 
@@ -698,14 +700,14 @@ class CodenamesClient:
         ui_elements.append(self.red_team_button)
         ui_elements.append(self.blue_team_button)
 
-        y_offset += 50
+        y_offset += 90
         if self.my_chosen_team:
             chosen_team_color = RED_CARD if self.my_chosen_team == "red" else BLUE_CARD
             self._draw_text(f"Your choice: {self.my_chosen_team.upper()}", FONT_MEDIUM, chosen_team_color, WIDTH // 2, y_offset, center=True)
         else:
             self._draw_text("No team chosen yet.", FONT_MEDIUM, TEXT_COLOR, WIDTH // 2, y_offset, center=True)
 
-        y_offset += 60 # Space for start/leave buttons
+        y_offset += 30 # Space for start/leave buttons
 
         # Start Game Button (always enabled for room owner)
         is_owner = True
@@ -713,17 +715,19 @@ class CodenamesClient:
         
         start_game_btn = Button(WIDTH // 2 - 100, y_offset, 200, 50, "Start Game", self._send_start_game_request, is_enabled=is_owner)
         start_game_btn.draw(self.screen, mouse_pos)
+
+        
         ui_elements.append(start_game_btn)
 
         # Add instructional text for the owner if game cannot start yet
         if is_owner and players_in_room_count < 2:
-            self._draw_text("Need at least 2 players to start the game.", FONT_SMALL, ERROR_COLOR, WIDTH // 2, y_offset + 60, center=True)
+            self._draw_text("Need at least 2 players to start the game.", FONT_SMALL, ERROR_COLOR, WIDTH // 2, y_offset + 80, center=True)
         elif not is_owner:
-            self._draw_text("Only the room owner can start the game.", FONT_SMALL, TEXT_COLOR, WIDTH // 2, y_offset + 60, center=True)
+            self._draw_text("Only the room owner can start the game.", FONT_SMALL, TEXT_COLOR, WIDTH // 2, y_offset + 80, center=True)
 
 
         # Leave Room Button
-        leave_room_btn = Button(WIDTH // 2 - 100, y_offset + 120, 200, 50, "Leave Room", self._send_leave_room)
+        leave_room_btn = Button(WIDTH // 2 - 100, y_offset + 110, 200, 50, "Leave Room", self._send_leave_room)
         leave_room_btn.draw(self.screen, mouse_pos)
         ui_elements.append(leave_room_btn)
 
@@ -764,15 +768,15 @@ class CodenamesClient:
              # For now, let's keep it centered but be aware of potential overlap on smaller screens
         
         if self.clue_word:
-            self._draw_text(f"Clue: '{self.clue_word}' ({self.clue_number}) - Guesses: {self.guesses_made}", 
+            self._draw_text(f"Clue: '{self.clue_word}' - Guesses: {self.guesses_made}", 
                       FONT_MEDIUM, TEXT_COLOR, info_bar_rect.centerx, clue_display_y_in_bar, center=True)
         else:
             self._draw_text("Waiting for Spymaster's clue...", FONT_MEDIUM, TEXT_COLOR, info_bar_rect.centerx, clue_display_y_in_bar, center=True)
 
         # Game Board
         card_width = 170
-        card_height = 90
-        card_margin = 15
+        card_height = 65
+        card_margin = 10
         start_x = (WIDTH - (5 * card_width + 4 * card_margin)) // 2
         start_y = info_bar_rect.bottom + 20
 
@@ -813,17 +817,21 @@ class CodenamesClient:
         is_current_spymaster_for_turn = (self.my_assigned_role == "spymaster" and self.my_assigned_team == self.current_turn)
         is_current_operative_for_turn = (self.my_assigned_role == "operative" and self.my_assigned_team == self.current_turn)
         
-        print(f"[CLIENT_DEBUG] In draw_game: Client Fileno={self.client_fileno}, Current Turn={self.current_turn}")
-        print(f"[CLIENT_DEBUG] My Assigned Team={self.my_assigned_team}, My Assigned Role={self.my_assigned_role}")
-        print(f"[CLIENT_DEBUG] Is Current Spymaster for turn: {is_current_spymaster_for_turn}")
-        print(f"[CLIENT_DEBUG] Is Current Operative for turn: {is_current_operative_for_turn}")
+
+        # print(f"[CLIENT_DEBUG] In draw_game: Client Fileno={self.client_fileno}, Current Turn={self.current_turn}")
+        # print(f"[CLIENT_DEBUG] My Assigned Team={self.my_assigned_team}, My Assigned Role={self.my_assigned_role}")
+        # print(f"[CLIENT_DEBUG] Is Current Spymaster for turn: {is_current_spymaster_for_turn}")
+        # print(f"[CLIENT_DEBUG] Is Current Operative for turn: {is_current_operative_for_turn}")
+
+
+
+        # print(f"self.blue_score={self.blue_score}, self.red_score={self.red_score}")
 
         # Enable/Disable controls based on role and turn
         can_give_clue = is_current_spymaster_for_turn and not self.clue_word and not self.game_over
         can_guess_or_end_turn = is_current_operative_for_turn and self.clue_word and not self.game_over
 
         self.clue_word_input.set_enabled(can_give_clue)
-        self.clue_number_input.set_enabled(can_give_clue)
         self.send_clue_button.set_enabled(can_give_clue)
         self.end_turn_button.set_enabled(True)
 
@@ -832,11 +840,7 @@ class CodenamesClient:
         self.clue_word_input.draw(self.screen)
         ui_elements.append(self.clue_word_input)
         
-        self.clue_number_input.rect.topleft = (self.clue_word_input.rect.right + 10, action_bar_rect.y + 10)
-        self.clue_number_input.draw(self.screen)
-        ui_elements.append(self.clue_number_input)
-        
-        self.send_clue_button.rect.topleft = (self.clue_number_input.rect.right + 10, action_bar_rect.y + 10)
+        self.send_clue_button.rect.topleft = (self.clue_word_input.rect.right + 10, action_bar_rect.y + 10)
         self.send_clue_button.draw(self.screen, mouse_pos)
         ui_elements.append(self.send_clue_button)
         
@@ -855,7 +859,7 @@ class CodenamesClient:
             back_to_lobby_button.draw(self.screen, mouse_pos)
             ui_elements.append(back_to_lobby_button)
         elif is_current_spymaster_for_turn and not self.clue_word:
-            self._draw_text("It's your turn to give a clue!", FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
+            self._draw_text("It's your turn to give a clue!", FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
         elif is_current_operative_for_turn and self.clue_word:
             self._draw_text(f"Click a word to guess (Guesses left: {self.clue_number + 1 - self.guesses_made})", 
                            FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
@@ -863,10 +867,10 @@ class CodenamesClient:
             for rect, word in card_rects:
                 if rect.collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0] and \
                    not next((c for c in self.game_board if c["word"] == word), {}).get('revealed', False):
-                    self._send_guess(word)
+                    # self._send_guess(word)
                     break
         else:
-            self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
+            self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
 
         return ui_elements
 
