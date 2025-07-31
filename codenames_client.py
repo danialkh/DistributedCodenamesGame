@@ -766,7 +766,7 @@ class CodenamesClient:
              # For now, let's keep it centered but be aware of potential overlap on smaller screens
         
         if self.clue_word:
-            self._draw_text(f"Clue: '{self.clue_word}' ({self.clue_number}) - Guesses: {self.guesses_made}", 
+            self._draw_text(f"Clue: '{self.clue_word}' - Guesses: {self.guesses_made}", 
                       FONT_MEDIUM, TEXT_COLOR, info_bar_rect.centerx, clue_display_y_in_bar, center=True)
         else:
             self._draw_text("Waiting for Spymaster's clue...", FONT_MEDIUM, TEXT_COLOR, info_bar_rect.centerx, clue_display_y_in_bar, center=True)

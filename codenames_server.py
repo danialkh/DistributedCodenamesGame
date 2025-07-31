@@ -366,7 +366,7 @@ class GameRoom:
             self.clue_word = word.upper()
             self.clue_number = number
             self.guesses_made = 0 # Reset guesses for the new clue
-            self.add_chat_message(f"{self.clients.get(client_fileno, 'Unknown')} gave clue: '{self.clue_word}' ({self.clue_number})")
+            self.add_chat_message(f"{self.clients.get(client_fileno, 'Unknown')} gave clue: '{self.clue_word}'")
             print(f"Room {self.room_id}: Clue '{word}' ({number}) given by {self.clients.get(client_fileno, 'Unknown')}.")
 
 
