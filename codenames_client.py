@@ -9,7 +9,7 @@ import traceback # For better error debugging
 import select # Import the select module for non-blocking I/O
 
 # --- Constants ---
-WIDTH, HEIGHT = 1000, 700
+WIDTH, HEIGHT = 1000, 650
 FPS = 60
 HEADER_LENGTH = 10 # Must match server's HEADER_LENGTH
 
@@ -700,14 +700,14 @@ class CodenamesClient:
         ui_elements.append(self.red_team_button)
         ui_elements.append(self.blue_team_button)
 
-        y_offset += 50
+        y_offset += 90
         if self.my_chosen_team:
             chosen_team_color = RED_CARD if self.my_chosen_team == "red" else BLUE_CARD
             self._draw_text(f"Your choice: {self.my_chosen_team.upper()}", FONT_MEDIUM, chosen_team_color, WIDTH // 2, y_offset, center=True)
         else:
             self._draw_text("No team chosen yet.", FONT_MEDIUM, TEXT_COLOR, WIDTH // 2, y_offset, center=True)
 
-        y_offset += 60 # Space for start/leave buttons
+        y_offset += 30 # Space for start/leave buttons
 
         # Start Game Button (always enabled for room owner)
         is_owner = True
@@ -715,17 +715,19 @@ class CodenamesClient:
         
         start_game_btn = Button(WIDTH // 2 - 100, y_offset, 200, 50, "Start Game", self._send_start_game_request, is_enabled=is_owner)
         start_game_btn.draw(self.screen, mouse_pos)
+
+        
         ui_elements.append(start_game_btn)
 
         # Add instructional text for the owner if game cannot start yet
         if is_owner and players_in_room_count < 2:
-            self._draw_text("Need at least 2 players to start the game.", FONT_SMALL, ERROR_COLOR, WIDTH // 2, y_offset + 60, center=True)
+            self._draw_text("Need at least 2 players to start the game.", FONT_SMALL, ERROR_COLOR, WIDTH // 2, y_offset + 80, center=True)
         elif not is_owner:
-            self._draw_text("Only the room owner can start the game.", FONT_SMALL, TEXT_COLOR, WIDTH // 2, y_offset + 60, center=True)
+            self._draw_text("Only the room owner can start the game.", FONT_SMALL, TEXT_COLOR, WIDTH // 2, y_offset + 80, center=True)
 
 
         # Leave Room Button
-        leave_room_btn = Button(WIDTH // 2 - 100, y_offset + 120, 200, 50, "Leave Room", self._send_leave_room)
+        leave_room_btn = Button(WIDTH // 2 - 100, y_offset + 110, 200, 50, "Leave Room", self._send_leave_room)
         leave_room_btn.draw(self.screen, mouse_pos)
         ui_elements.append(leave_room_btn)
 
@@ -773,8 +775,8 @@ class CodenamesClient:
 
         # Game Board
         card_width = 170
-        card_height = 90
-        card_margin = 15
+        card_height = 65
+        card_margin = 10
         start_x = (WIDTH - (5 * card_width + 4 * card_margin)) // 2
         start_y = info_bar_rect.bottom + 20
 
@@ -857,7 +859,7 @@ class CodenamesClient:
             back_to_lobby_button.draw(self.screen, mouse_pos)
             ui_elements.append(back_to_lobby_button)
         elif is_current_spymaster_for_turn and not self.clue_word:
-            self._draw_text("It's your turn to give a clue!", FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
+            self._draw_text("It's your turn to give a clue!", FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
         elif is_current_operative_for_turn and self.clue_word:
             self._draw_text(f"Click a word to guess (Guesses left: {self.clue_number + 1 - self.guesses_made})", 
                            FONT_MEDIUM, HIGHLIGHT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
@@ -868,7 +870,7 @@ class CodenamesClient:
                     # self._send_guess(word)
                     break
         else:
-            self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 50, center=True)
+            self._draw_text("Waiting for opponent's turn...", FONT_MEDIUM, TEXT_COLOR, action_bar_rect.centerx, action_bar_rect.y + 30, center=True)
 
         return ui_elements
 

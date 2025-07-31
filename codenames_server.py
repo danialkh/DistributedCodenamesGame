@@ -133,8 +133,8 @@ class GameRoom:
         available_words = random.sample(ALL_WORDS, 25) # Pick 25 unique words
         
         # Standard Codenames distribution (assuming Red starts)
-        # 9 Red, 8 Blue, 7 Innocent, 1 Assassin
-        colors_distribution = ["red"] * 9 + ["blue"] * 8 + ["innocent"] * 7 + ["assassin"] * 1
+        # 8 Red, 8 Blue, 7 Innocent, 2 Assassin
+        colors_distribution = ["red"] * 8 + ["blue"] * 8 + ["innocent"] * 7 + ["assassin"] * 2
         random.shuffle(colors_distribution)
 
         board = []
