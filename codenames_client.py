@@ -264,7 +264,10 @@ class CodenamesClient:
                 json_message = json.dumps(message)
                 message_header = f"{len(json_message):<{HEADER_LENGTH}}".encode('utf-8')
                 self.client.sendall(message_header + json_message.encode('utf-8'))
-                # print(f"[CLIENT] Sent: {message.get('type')}")
+                print(f"[CLIENT] messageSent message_header: {message_header.decode('utf-8')}")
+                print(f"[CLIENT] messageSent json_message: {json_message}")
+                print(f"[CLIENT] messageSent json_messageEncode: {json_message.encode('utf-8')}")
+                print(f"[CLIENT] messageSent type: {message.get('type')}")
             except Exception as e:
                 print(f"[CLIENT ERROR] Error sending message: {e}")
                 self._reset_connection_state()
@@ -288,6 +291,17 @@ class CodenamesClient:
                 return None
 
             message = json.loads(full_message.decode('utf-8'))
+
+
+            #  To see the receive_messages
+            # print(f"[CLIENT] receive_message message_header: {message_header.decode('utf-8')}")
+            # print(f"[CLIENT] receive_message full_message: {full_message.decode('utf-8')}")
+            # print(f"[CLIENT] receive_message message: {message}")
+            # print(f"[CLIENT] receive_message type: {message.get('type')}")
+
+
+
+
             return message
 
         except ValueError:

@@ -298,11 +298,11 @@ class GameRoom:
                 player_obj.role = "operative" # This line might be redundant if spymaster is primary role
 
 
-        print(f"Roles assigned for room {self.room_id}:")
-        print(f"  Red Spymaster: {self.server.connected_clients[self.red_spymaster_fileno].name if self.red_spymaster_fileno and self.red_spymaster_fileno in self.server.connected_clients else 'None'}")
-        print(f"  Red Operatives: {[self.server.connected_clients[f].name for f in self.red_operatives_filenos if f in self.server.connected_clients]}")
-        print(f"  Blue Spymaster: {self.server.connected_clients[self.blue_spymaster_fileno].name if self.blue_spymaster_fileno and self.blue_spymaster_fileno in self.server.connected_clients else 'None'}")
-        print(f"  Blue Operatives: {[self.server.connected_clients[f].name for f in self.blue_operatives_filenos if f in self.server.connected_clients]}")
+        # print(f"Roles assigned for room {self.room_id}:")
+        # print(f"  Red Spymaster: {self.server.connected_clients[self.red_spymaster_fileno].name if self.red_spymaster_fileno and self.red_spymaster_fileno in self.server.connected_clients else 'None'}")
+        # print(f"  Red Operatives: {[self.server.connected_clients[f].name for f in self.red_operatives_filenos if f in self.server.connected_clients]}")
+        # print(f"  Blue Spymaster: {self.server.connected_clients[self.blue_spymaster_fileno].name if self.blue_spymaster_fileno and self.blue_spymaster_fileno in self.server.connected_clients else 'None'}")
+        # print(f"  Blue Operatives: {[self.server.connected_clients[f].name for f in self.blue_operatives_filenos if f in self.server.connected_clients]}")
 
 
     def get_game_state_for_client(self, client_fileno):
@@ -671,6 +671,8 @@ class CodenamesServer:
 
     def _process_message(self, client_fileno, message):
         mtype = message.get("type")
+
+        message.get("")
         
         with self.lock:
             player_obj = self.connected_clients.get(client_fileno)
