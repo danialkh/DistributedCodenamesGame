@@ -1,3 +1,7 @@
-cd to the directory of these files then to run the server and clients use these:
-python codenames_server.py
-python codenames_client.py
+cd C:\Users\Danial\Desktop\ll\pppppppppppp\11
+python failover_server_with_feedback.py
+
+python codenames_server_with_feedback.py
+
+
+python codenames_client_with_feedback.py

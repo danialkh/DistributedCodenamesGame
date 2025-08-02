@@ -1,0 +1,18 @@
+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
+
+
+
+git clone https://github.com/danialkh/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@bitbucket.org/workspaceID/reposlug.git
+
+
+git remote add origin https://[TOKEN]@github.com/[REPO-OWNER]/[REPO-NAME]
+git remote add origin https://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@github.com/danialkh/DistributedCodenamesGame
+
+
+https://github.com/danialkh/DistributedCodenamesGame
+
+git@github.com:danialkh/DistributedCodenamesGame.git
+
+gh repo clone danialkh/DistributedCodenamesGame
+
+https://github.com/danialkh/DistributedCodenamesGame.git
