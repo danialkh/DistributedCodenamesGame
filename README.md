@@ -22,6 +22,7 @@ Clone this repository and navigate to your project directory.
  **python codenames_server.py**
  
  Then, in a separate terminal window, start the client:
+ or simply run 1.sh (which is for oppening the server usign bash)
  
  **2. Start the Client**
 
@@ -31,6 +32,7 @@ Clone this repository and navigate to your project directory.
  
  Make sure to run the server before the client.
  Run this for more clients to play.
+ or simply run 2.sh (which is for oppening the client usign bash)
 
 ## 🖥️ Codenames Lobby 
 
