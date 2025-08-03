@@ -32,11 +32,12 @@ CARD_BORDER_COLOR = (80, 80, 80)
 pygame.init()
 
 # Fonts
-FONT_SMALL = pygame.font.SysFont('Arial', 16)
-FONT = pygame.font.SysFont('Arial', 20)
-FONT_MEDIUM = pygame.font.SysFont('Arial', 24, bold=True)
-FONT_LARGE = pygame.font.SysFont('Arial', 32, bold=True)
-GAME_OVER_FONT = pygame.font.SysFont('Arial', 48, bold=True)
+FontName = 'Comic Sans'
+FONT_SMALL = pygame.font.SysFont(FontName, 16)
+FONT = pygame.font.SysFont(FontName, 20)
+FONT_MEDIUM = pygame.font.SysFont(FontName, 22, bold=True)
+FONT_LARGE = pygame.font.SysFont(FontName, 32, bold=True)
+GAME_OVER_FONT = pygame.font.SysFont(FontName, 48, bold=True)
 
 SERVER_HOST = '127.0.0.1'
 SERVER_PORT = 5555
