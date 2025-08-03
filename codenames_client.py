@@ -769,10 +769,18 @@ class CodenamesClient:
         turn_text_color = RED_CARD if self.current_turn == "red" else BLUE_CARD
         self._draw_text(f"Turn: {self.current_turn.upper()}", FONT_LARGE, turn_text_color, info_bar_rect.x + 650, info_bar_rect.y + 15, center=False)
 
+
         # Display player's team and role
-        player_role_text = f"You are: {my_team} {my_role}"
+        player_role_text = f"Your username: {self.username}"
         player_role_color = RED_CARD if my_team.lower() == "red" else (BLUE_CARD if my_team.lower() == "blue" else TEXT_COLOR)
-        self._draw_text(player_role_text, FONT_MEDIUM, player_role_color, info_bar_rect.x + 20, info_bar_rect.y + 55, center=False)
+        self._draw_text(player_role_text, FONT_MEDIUM, TEXT_COLOR, info_bar_rect.x + 20, info_bar_rect.y + 40, center=False)
+
+        # Display player's team and role
+        player_role_text = f"You role: {my_team} {my_role}"
+        player_role_color = RED_CARD if my_team.lower() == "red" else (BLUE_CARD if my_team.lower() == "blue" else TEXT_COLOR)
+        self._draw_text(player_role_text, FONT_MEDIUM, player_role_color, info_bar_rect.x + 20, info_bar_rect.y + 65, center=False)
+
+
 
         clue_display_y_in_bar = info_bar_rect.y + 55
         # Adjust clue display position if player role text is present
