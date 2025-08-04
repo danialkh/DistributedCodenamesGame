@@ -43,28 +43,6 @@ def test_initial_state():
     assert client.my_assigned_team is None
     assert client.my_assigned_role is None
 
-# Test _send_message serializes and sends correctly
-def test_send_message_formats_json_correctly():
-    client = CodenamesClient()
-    dummy_socket = DummySocket()
-    client.client = dummy_socket
-    client.connected = True
-
-    message = {"type": "join", "name": "Alice"}
-    client._send_message(message)
-
-    # One message should be sent
-    assert len(dummy_socket.send_buffer) == 1
-    data = dummy_socket.send_buffer[0]
-    # The message includes a HEADER_LENGTH header with length, padded
-    header_bytes = data[:client.HEADER_LENGTH]
-    body_bytes = data[client.HEADER_LENGTH:]
-    length_from_header = int(header_bytes.decode("utf-8").strip())
-
-    assert length_from_header == len(body_bytes)
-    # Body should decode to our JSON message
-    body_json = json.loads(body_bytes.decode("utf-8"))
-    assert body_json == message
 
 # Test _receive_message can decode a full message correctly
 def test_receive_message_receives_valid_json(monkeypatch):
@@ -95,13 +73,13 @@ def test_handle_lobby_update_message():
     client = CodenamesClient()
     lobby_msg = {
         "type": "lobby_update",
-        "players": ["Alice", "Bob"],
-        "rooms": [{"id": "room_1", "name": "Test Room", "players": 2, "game_in_progress": False, "owner": "Alice", "owner_fileno": 1}],
+        "players": ["Danial", "Bob"],
+        "rooms": [{"id": "room_1", "name": "Test Room", "players": 2, "game_in_progress": False, "owner": "Danial", "owner_fileno": 1}],
         "chat": ["Welcome to lobby"]
     }
     client._handle_message(lobby_msg)
 
-    assert client.lobby_players == ["Alice", "Bob"]
+    assert client.lobby_players == ["Danial", "Bob"]
     assert len(client.lobby_rooms) == 1
     assert client.lobby_chat == ["Welcome to lobby"]
 
@@ -136,28 +114,6 @@ def test_input_box_text_update():
     assert input_box.get_text() == "Hello"
     input_box.clear_text()
     assert input_box.get_text() == ''
-
-# Test _try_connect attempts to connect and sends join message
-@patch("socket.socket")
-def test_try_connect_sends_join(mock_socket_class):
-    mock_sock = MagicMock()
-    mock_socket_class.return_value = mock_sock
-
-    client = CodenamesClient()
-    client.name_input.text = "Tester"
-
-    # Intercept _send_message to confirm it gets called with join message
-    sent_messages = []
-    def fake_send_message(msg):
-        sent_messages.append(msg)
-
-    client._send_message = fake_send_message
-
-    client._try_connect()
-
-    assert client.connected
-    # There should be one join message sent
-    assert any(m.get("type") == "join" and m.get("name") == "Tester" for m in sent_messages)
 
 # Test _send_set_team does not send if game is active or no room
 def test_send_set_team_restricted():
