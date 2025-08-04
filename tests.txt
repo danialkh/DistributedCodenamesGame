@@ -1,0 +1,7 @@
+test_client.py::test_initial_state PASSED                                                                                                                        [ 11%]
+test_client.py::test_send_message_formats_json_correctly FAILED                                                                                                  [ 22%]
+test_client.py::test_receive_message_receives_valid_json PASSED                                                                                                  [ 33%]
+test_client.py::test_receive_message_disconnect PASSED                                                                                                           [ 44%]
+test_client.py::test_handle_lobby_update_message PASSED                                                                                                          [ 55%]
+test_client.py::test_reset_connection_state_closes_socket PASSED                                                                                                 [ 66%]
+test_client.py::test_input_box_text_update PASSED
