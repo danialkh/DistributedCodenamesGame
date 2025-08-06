@@ -3,3 +3,12 @@ python failover_server_with_feedback.py
 python codenames_server.py
 
 python codenames_client.py
+
+python test_use.py
+
+For using the docker container:
+	docker-compose up --build
+or simply use this comment to set the mongo to port 27017 which is the game port:
+	docker run -d --name my-mongodb -p 27017:27017 mongo:4.4
+
+

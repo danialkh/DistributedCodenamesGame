@@ -1,0 +1,10 @@
+[
+  "tests/test_client.py::test_handle_lobby_update_message",
+  "tests/test_client.py::test_initial_state",
+  "tests/test_client.py::test_input_box_text_update",
+  "tests/test_client.py::test_receive_message_disconnect",
+  "tests/test_client.py::test_receive_message_receives_valid_json",
+  "tests/test_client.py::test_reset_connection_state_closes_socket",
+  "tests/test_client.py::test_send_create_room_sends_message_and_updates_state",
+  "tests/test_client.py::test_send_set_team_restricted"
+]

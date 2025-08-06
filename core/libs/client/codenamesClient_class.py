@@ -8,6 +8,9 @@ import sys
 import traceback # For better error debugging
 import select # Import the select module for non-blocking I/O
 
+from inputBox import InputBox
+from button import Button
+
 # --- Constants ---
 WIDTH, HEIGHT = 1000, 650
 FPS = 60
@@ -41,134 +44,6 @@ GAME_OVER_FONT = pygame.font.SysFont(FontName, 48, bold=True)
 
 SERVER_HOST = '127.0.0.1'
 SERVER_PORT = 5555
-
-# --- UI Element Classes ---
-class InputBox:
-    """A simple input box for text entry."""
-    def __init__(self, x, y, w, h, text='', placeholder='', font=FONT, is_enabled=True):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.color = PANEL_COLOR
-        self.text_color = TEXT_COLOR
-        self.active_border_color = ACCENT_COLOR
-        self.inactive_border_color = (80, 80, 95)
-        self.disabled_color = (60, 60, 75)
-        self.disabled_text_color = (150, 150, 150)
-        self.text = text
-        self.placeholder = placeholder
-        self.font = font
-        self.active = False
-        self.is_enabled = is_enabled
-        self.border_radius = 5
-        self._update_surface()
-
-    def _update_surface(self):
-        """Renders the current text or placeholder to a surface."""
-        current_text_color = self.text_color if self.is_enabled else self.disabled_text_color
-        display_text = self.text if self.text else self.placeholder
-        self.txt_surface = self.font.render(display_text, True, current_text_color)
-
-    def handle_event(self, event):
-        """Handles Pygame events for the input box."""
-        if not self.is_enabled:
-            return False
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            self.active = self.rect.collidepoint(event.pos)
-        if event.type == pygame.KEYDOWN and self.active:
-            if event.key == pygame.K_BACKSPACE:
-                self.text = self.text[:-1]
-            elif event.key != pygame.K_RETURN: # Ignore Enter key press
-                self.text += event.unicode
-            self._update_surface()
-        return False
-
-    def draw(self, screen):
-        """Draws the input box on the screen."""
-        current_bg_color = self.color if self.is_enabled else self.disabled_color
-        pygame.draw.rect(screen, current_bg_color, self.rect, border_radius=self.border_radius)
-        
-        border_color = self.inactive_border_color
-        if self.is_enabled:
-            border_color = self.active_border_color if self.active else self.inactive_border_color
-        pygame.draw.rect(screen, border_color, self.rect, 2, border_radius=self.border_radius)
-        
-        text_x = self.rect.x + 8
-        text_y = self.rect.y + (self.rect.height - self.txt_surface.get_height()) // 2
-        screen.blit(self.txt_surface, (text_x, text_y))
-
-    def get_text(self):
-        """Returns the current text in the input box."""
-        return self.text
-
-    def clear_text(self):
-        """Clears the text in the input box."""
-        self.text = ''
-        self._update_surface()
-
-    def set_enabled(self, enabled):
-        """Enables or disables the input box."""
-        self.is_enabled = enabled
-        if not enabled:
-            self.active = False
-        self._update_surface() # Update surface to reflect disabled state color
-
-
-class Button:
-    """A clickable button."""
-    def __init__(self, x, y, w, h, text, action=None, font=FONT, is_enabled=True, base_color=None, hover_color=None):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.text = text
-        self.action = action
-        self.font = font
-        self.text_color = TEXT_COLOR
-        self.base_color = base_color if base_color else (60, 60, 75)
-        self.hover_color = hover_color if hover_color else ACCENT_COLOR
-        # More distinct disabled colors
-        self.disabled_color = (30, 30, 40) # Darker background
-        self.disabled_text_color = (80, 80, 80) # More faded text
-        self.border_radius = 8
-        self.shadow_offset = 3
-        self.shadow_color = (20, 20, 25)
-        self.is_enabled = is_enabled
-
-    def draw(self, screen, mouse_pos):
-        """Draws the button on the screen."""
-        current_bg_color = self.base_color
-        current_text_color = self.text_color
-
-        if not self.is_enabled:
-            current_bg_color = self.disabled_color
-            current_text_color = self.disabled_text_color
-        elif self.rect.collidepoint(mouse_pos):
-            current_bg_color = self.hover_color
-        
-        if self.is_enabled:
-            shadow_rect = pygame.Rect(self.rect.x + self.shadow_offset, self.rect.y + self.shadow_offset,
-                                      self.rect.width, self.rect.height)
-            pygame.draw.rect(screen, self.shadow_color, shadow_rect, border_radius=self.border_radius)
-
-        pygame.draw.rect(screen, current_bg_color, self.rect, border_radius=self.border_radius)
-        
-        text_surface = self.font.render(self.text, True, current_text_color)
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface, text_rect)
-
-    def handle_event(self, event):
-        """Handles Pygame events for the button."""
-        if not self.is_enabled:
-            return False
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                if self.action:
-                    self.action()
-                return True
-        return False
-
-    def set_enabled(self, enabled):
-        """Enables or disables the button."""
-        self.is_enabled = enabled
-
 
 # --- Codenames Client Class ---
 class CodenamesClient:
@@ -946,7 +821,3 @@ class CodenamesClient:
             self.client.close()
         pygame.quit()
         sys.exit()
-
-if __name__ == "__main__":
-    client = CodenamesClient()
-    client.run()
