@@ -28,8 +28,11 @@ or simply use this comment to set the mongo to port 27017 which is the game port
 
 Obtain these two files:
 ∗ 1. For the server use the main.py in the main folder:
+
 python main.py
+
 ∗ 2. for the client use the codenames client.py:
+
 python ../core/libs/client/codenames_client.py
  
  Open a terminal and run:
