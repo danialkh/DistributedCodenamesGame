@@ -47,9 +47,8 @@ Clone this repository and navigate to your project directory.
     •	Refresh the lobby to update player and room lists    
     The lobby serves as a central hub to organize game sessions, chat, and manage rooms, system messages before gameplay begins.
 
-<img width="1000" height="700" alt="Python 3 13 7_30_2025 7_23_58 PM" src="https://github.com/user-attachments/assets/9ab2c1ce-75ca-40a8-9430-c7f1a2c1d561" />
+<img width="1000" height="650" alt="Python 3 13 8_6_2025 9_53_20 AM" src="https://github.com/user-attachments/assets/b42202d3-291b-4e35-b9b8-524149a77d1e" />
 
- 
 
   **It is Red's Turn to guess**
 
