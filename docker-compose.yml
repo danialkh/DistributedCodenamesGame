@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: my-mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/db:/data/db   # maps local project folder ./data/db to MongoDB inside container
+    restart: unless-stopped
