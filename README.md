@@ -15,7 +15,22 @@ Clone this repository and navigate to your project directory.
 
 ## 🖥️ Usage
 
+# 🖥️ Run Docker
+For using the docker container:
+	*docker-compose up --build*
+or simply use this comment to set the mongo to port 27017 which is the game port:
+	*docker run -d --name my-mongodb -p 27017:27017 mongo:4.4*
+
+# 🖥️ Run Server and client
+**After running docker and mongodb**
+ 
 **1. Start the Server**
+
+Obtain these two files:
+∗ 1. For the server use the main.py in the main folder:
+python main.py
+∗ 2. for the client use the codenames client.py:
+python ../core/libs/client/codenames_client.py
  
  Open a terminal and run:
  
